@@ -9,7 +9,7 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, Tray } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
@@ -71,8 +71,17 @@ const createWindow = async () => {
 
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 800,
+    height: 100,
+    type: 'toolbar',
+    frame: false,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    skipTaskbar: true,
+    transparent: true,
+    alwaysOnTop: true,
+    useContentSize: true,
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
@@ -124,9 +133,12 @@ app.on('window-all-closed', () => {
   }
 });
 
+let tray = null;
 app
   .whenReady()
   .then(() => {
+    tray = new Tray('assets/icon.png');
+    tray.setToolTip('tdbar');
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
